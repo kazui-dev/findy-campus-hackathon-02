@@ -1,12 +1,7 @@
-import { CounterWidget } from './counter'
+import { RadioDJ } from './radio'
 
 function App() {
-  return (
-    <div>
-      <h1>Hello!</h1>
-      <CounterWidget />
-    </div>
-  )
+  return <RadioDJ />
 }
 
 export default App

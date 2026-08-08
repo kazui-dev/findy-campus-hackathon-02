@@ -1,3 +1,142 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  font-family: 'Hiragino Sans', 'Yu Gothic', Arial, Helvetica, sans-serif;
+  background: #14101c;
+  color: #f4f1f8;
+}
+
+.radio {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.radio-header h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+.radio-header p {
+  margin: 0 0 24px;
+  color: #b9aecf;
+}
+
+.postcard-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #1f1830;
+  border: 1px solid #362a4d;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.postcard-form textarea {
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #3d3155;
+  background: #14101c;
+  color: inherit;
+}
+
+.postcard-form button {
+  align-self: flex-end;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #ff6f91;
+  color: #1a1220;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.postcard-form button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.error {
+  color: #ff8b8b;
+  margin: 12px 0 0;
+}
+
+.empty {
+  color: #7c7092;
+  margin-top: 32px;
+  text-align: center;
+}
+
+.entries {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.entry {
+  background: #1f1830;
+  border: 1px solid #362a4d;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.entry .label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #a58fd6;
+  margin-bottom: 4px;
+}
+
+.entry p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.entry .postcard p {
+  color: #d9d1ea;
+}
+
+.entry .reply button {
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #a58fd6;
+  background: transparent;
+  color: #f4f1f8;
+  cursor: pointer;
+}
+
+.entry .reply button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.entry .song {
+  border-top: 1px dashed #362a4d;
+  padding-top: 10px;
+}
+
+.entry .song .reason {
+  color: #b9aecf;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.entry .spotify-note {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: #7c7092;
 }

@@ -1,21 +1,24 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "findy-hackathon-app",
+  "name": "findy-campus-hackathon-02",
   "main": "src/index.tsx",
   "compatibility_date": "2026-06-14",
   "compatibility_flags": ["nodejs_compat"],
+  "ai": {
+    "binding": "AI"
+  },
   "durable_objects": {
     "bindings": [
       {
-        "name": "CounterAgent",
-        "class_name": "CounterAgent"
+        "name": "RadioAgent",
+        "class_name": "RadioAgent"
       }
     ]
   },
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["CounterAgent"]
+      "new_sqlite_classes": ["RadioAgent"]
     }
   ]
 }
