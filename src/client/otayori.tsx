@@ -121,7 +121,7 @@ export function Otayori() {
                 {sending ? (
                   <>
                     <span className="spinner" aria-hidden="true" />
-                    お返事を待っています
+                    返事を待っています
                   </>
                 ) : (
                   '送る'
