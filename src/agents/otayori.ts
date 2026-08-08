@@ -56,23 +56,36 @@ function parseGeneratedReply(raw: string): GeneratedReply {
 export class OtayoriAgent extends Agent<CloudflareBindings, OtayoriState> {
   initialState: OtayoriState = { entries: [] }
 
+  // JSONを指定していても、稀に地の文だけ返ってくる。そのときは一度だけ引き直す。
+  private async generateReply(text: string): Promise<GeneratedReply> {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const result = await this.env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: text }
+        ],
+        response_format: { type: 'json_object' },
+        // 既定(256)だと日本語では曲紹介の途中で切れる。
+        max_tokens: 768
+      })
+
+      const raw = typeof result === 'string' ? result : 'response' in result ? (result.response ?? '') : ''
+      try {
+        return parseGeneratedReply(raw)
+      } catch {
+        console.warn(`Reply was not JSON (attempt ${attempt + 1}): ${raw.slice(0, 120)}`)
+      }
+    }
+
+    throw new Error('返事を組み立てられませんでした')
+  }
+
   @callable()
   async submitPostcard(postcard: string) {
     const text = postcard.trim()
     if (!text) throw new Error('お便りが空です')
 
-    const result = await this.env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: text }
-      ],
-      response_format: { type: 'json_object' },
-      // 既定(256)だと日本語では曲紹介の途中で切れる。
-      max_tokens: 768
-    })
-
-    const raw = typeof result === 'string' ? result : 'response' in result ? (result.response ?? '') : ''
-    const generated = parseGeneratedReply(raw)
+    const generated = await this.generateReply(text)
 
     // 曲探しと読み上げは互いに独立しているので同時に走らせる。
     // 音声は返事と一緒に返し、クライアントが往復なしですぐ鳴らせるようにする。

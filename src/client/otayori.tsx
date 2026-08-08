@@ -14,7 +14,6 @@ export function Otayori() {
   const [sending, setSending] = useState(false)
   const [latest, setLatest] = useState<OtayoriEntry | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [speakingId, setSpeakingId] = useState<string | null>(null)
   const [nowPlaying, setNowPlaying] = useState<OtayoriEntry | null>(null)
   const [playing, setPlaying] = useState(false)
   const [clientId] = useState(getClientId)
@@ -50,15 +49,7 @@ export function Otayori() {
       setText('')
       setLatest(entry)
       // 届いたらそのまま読み上げ、読み終わったら曲へ。タップは挟まない。
-      setSpeakingId(entry.id)
-      playReply(
-        () => Promise.resolve(audio),
-        entry.reply,
-        () => {
-          setSpeakingId((current) => (current === entry.id ? null : current))
-          startSong(entry)
-        }
-      )
+      playReply(() => Promise.resolve(audio), entry.reply, () => startSong(entry))
     } catch {
       setError('うまく送れませんでした。もう一度お試しください。')
     } finally {
@@ -69,7 +60,6 @@ export function Otayori() {
   // 画面を離れたら、その画面で鳴っていたものは終わり。読み上げも曲も持ち越さない。
   function leaveScreen() {
     stopSpeaking()
-    setSpeakingId(null)
     stop()
     setNowPlaying(null)
   }
@@ -88,26 +78,11 @@ export function Otayori() {
 
   function handleSpeak(entry: OtayoriEntry) {
     setError(null)
-
-    if (speakingId === entry.id) {
-      stopSpeaking()
-      setSpeakingId(null)
-      return
-    }
-
     // 音声を取りに行く前に、クリックの権利があるうちに再生を許可させる。
     primeAudio()
     stop()
-    setSpeakingId(entry.id)
-    playReply(
-      () => agent.stub.speak(entry.id),
-      entry.reply,
-      () => {
-        setSpeakingId((current) => (current === entry.id ? null : current))
-        // 返事を読み終えたら、そのまま曲へ渡す。
-        startSong(entry)
-      }
-    )
+    // 返事を読み終えたら、そのまま曲へ渡す。
+    playReply(() => agent.stub.speak(entry.id), entry.reply, () => startSong(entry))
   }
 
   const history = [...entries].sort((a, b) => b.createdAt - a.createdAt)
@@ -120,13 +95,7 @@ export function Otayori() {
         {tab === 'write' ? (
           latest ? (
             <div className="reply-view">
-              <ReplyCard
-                entry={latest}
-                speaking={speakingId === latest.id}
-                auto
-                onSpeak={handleSpeak}
-                onPlaySong={startSong}
-              />
+              <ReplyCard entry={latest} auto onSpeak={handleSpeak} onPlaySong={startSong} />
               <button
                 type="button"
                 className="ghost-button"
@@ -149,7 +118,14 @@ export function Otayori() {
                 autoFocus
               />
               <button type="submit" className="primary-button" disabled={sending || !text.trim()}>
-                {sending ? '送っています' : '送る'}
+                {sending ? (
+                  <>
+                    <span className="spinner" aria-hidden="true" />
+                    お返事を待っています
+                  </>
+                ) : (
+                  '送る'
+                )}
               </button>
             </form>
           )
@@ -162,12 +138,7 @@ export function Otayori() {
                 <article key={entry.id} className="history-item">
                   <time className="history-date">{formatDate(entry.createdAt)}</time>
                   <p className="history-postcard">{entry.postcard}</p>
-                  <ReplyCard
-                    entry={entry}
-                    speaking={speakingId === entry.id}
-                    onSpeak={handleSpeak}
-                    onPlaySong={startSong}
-                  />
+                  <ReplyCard entry={entry} onSpeak={handleSpeak} onPlaySong={startSong} />
                 </article>
               ))
             )}
@@ -210,26 +181,22 @@ export function Otayori() {
 
 function ReplyCard({
   entry,
-  speaking,
   auto = false,
   onSpeak,
   onPlaySong
 }: {
   entry: OtayoriEntry
-  speaking: boolean
   auto?: boolean
   onSpeak: (entry: OtayoriEntry) => void
   onPlaySong: (entry: OtayoriEntry) => void
 }) {
-  // 届いた直後は勝手に読み上げているので、出すのは「とめる」だけでいい。
-  const showSpeakButton = speaking || !auto
-
   return (
     <div className="reply">
       <p className="reply-text">{entry.reply}</p>
-      {showSpeakButton && (
-        <button type="button" className={speaking ? 'speak-button speaking' : 'speak-button'} onClick={() => onSpeak(entry)}>
-          {speaking ? 'とめる' : '聴く'}
+      {/* 届いた直後は勝手に読み上げている。聴き直すのは履歴からで足りる。 */}
+      {!auto && (
+        <button type="button" className="speak-button" onClick={() => onSpeak(entry)}>
+          聴く
         </button>
       )}
 
