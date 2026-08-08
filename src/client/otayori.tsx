@@ -66,6 +66,20 @@ export function Otayori() {
     }
   }
 
+  // 画面を離れたら、その画面で鳴っていたものは終わり。読み上げも曲も持ち越さない。
+  function leaveScreen() {
+    stopSpeaking()
+    setSpeakingId(null)
+    stop()
+    setNowPlaying(null)
+  }
+
+  function switchTab(next: Tab) {
+    if (next === tab) return
+    leaveScreen()
+    setTab(next)
+  }
+
   function startSong(entry: OtayoriEntry) {
     if (!entry.youtube || !playerHost.current) return
     setNowPlaying(entry)
@@ -113,7 +127,14 @@ export function Otayori() {
                 onSpeak={handleSpeak}
                 onPlaySong={startSong}
               />
-              <button type="button" className="ghost-button" onClick={() => setLatest(null)}>
+              <button
+                type="button"
+                className="ghost-button"
+                onClick={() => {
+                  leaveScreen()
+                  setLatest(null)
+                }}
+              >
                 別のおたよりを書く
               </button>
             </div>
@@ -176,10 +197,10 @@ export function Otayori() {
       </div>
 
       <nav className="tabbar">
-        <button type="button" className={tab === 'write' ? 'active' : ''} onClick={() => setTab('write')}>
+        <button type="button" className={tab === 'write' ? 'active' : ''} onClick={() => switchTab('write')}>
           おたよりを書く
         </button>
-        <button type="button" className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>
+        <button type="button" className={tab === 'history' ? 'active' : ''} onClick={() => switchTab('history')}>
           履歴
         </button>
       </nav>
