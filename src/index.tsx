@@ -14,6 +14,7 @@ app.get('/', async (c) => {
     await renderToReadableStream(
       <html>
         <head>
+          <title>otayori</title>
           <ViteClient />
           <ReactRefresh />
           <Script src="/src/client/index.tsx" />
