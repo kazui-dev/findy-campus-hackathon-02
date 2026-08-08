@@ -7,6 +7,13 @@
   "ai": {
     "binding": "AI"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "otayori",
+      "database_id": "b738b0fe-10c9-42ad-8d41-1956a234a836"
+    }
+  ],
   "durable_objects": {
     "bindings": [
       {
