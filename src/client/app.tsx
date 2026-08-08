@@ -1,7 +1,7 @@
-import { RadioDJ } from './radio'
+import { Otayori } from './otayori'
 
 function App() {
-  return <RadioDJ />
+  return <Otayori />
 }
 
 export default App

@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { agentsMiddleware } from 'hono-agents'
 import { renderToReadableStream } from 'react-dom/server'
 import { Script, Link, ViteClient, ReactRefresh } from 'vite-ssr-components/react'
-export { RadioAgent } from './agents/radio'
+export { OtayoriAgent } from './agents/otayori'
 
 const app = new Hono<{ Bindings: CloudflareBindings }>()
 
@@ -14,6 +14,9 @@ app.get('/', async (c) => {
     await renderToReadableStream(
       <html>
         <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+          <title>otayori</title>
           <ViteClient />
           <ReactRefresh />
           <Script src="/src/client/index.tsx" />
