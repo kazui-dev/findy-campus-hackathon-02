@@ -135,6 +135,45 @@ body {
   margin-top: 4px;
 }
 
+.entry .track {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  background: #241a37;
+  text-decoration: none;
+  color: inherit;
+}
+
+.entry .track:hover {
+  background: #2e2246;
+}
+
+.entry .track-art {
+  border-radius: 6px;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.entry .track-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.entry .track-artist {
+  color: #b9aecf;
+  font-size: 0.9rem;
+}
+
+.entry .track-open {
+  color: #1db954;
+  font-size: 0.78rem;
+}
+
 .entry .spotify-note {
   margin-top: 6px;
   font-size: 0.78rem;

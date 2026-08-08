@@ -92,11 +92,24 @@ export function RadioDJ() {
             </div>
             <div className="song">
               <span className="label">今日の一曲</span>
-              <p className="song-title">
-                <strong>{entry.songTitle}</strong> / {entry.songArtist}
-              </p>
+              {entry.spotify ? (
+                <a className="track" href={entry.spotify.url} target="_blank" rel="noreferrer">
+                  {entry.spotify.albumImage && (
+                    <img className="track-art" src={entry.spotify.albumImage} alt="" width={64} height={64} />
+                  )}
+                  <span className="track-meta">
+                    <strong>{entry.spotify.name}</strong>
+                    <span className="track-artist">{entry.spotify.artist}</span>
+                    <span className="track-open">Spotifyで開く ↗</span>
+                  </span>
+                </a>
+              ) : (
+                <p className="song-title">
+                  <strong>{entry.songTitle}</strong> / {entry.songArtist}
+                </p>
+              )}
               <p className="reason">{entry.songReason}</p>
-              <p className="spotify-note">🎧 Spotify連携は準備中です</p>
+              {!entry.spotify && <p className="spotify-note">🎧 Spotifyでこの曲は見つかりませんでした</p>}
             </div>
           </li>
         ))}
