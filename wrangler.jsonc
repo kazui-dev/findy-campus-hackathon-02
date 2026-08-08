@@ -10,8 +10,8 @@
   "durable_objects": {
     "bindings": [
       {
-        "name": "RadioAgent",
-        "class_name": "RadioAgent"
+        "name": "OtayoriAgent",
+        "class_name": "OtayoriAgent"
       }
     ]
   },
@@ -24,6 +24,10 @@
       "tag": "v2",
       "new_sqlite_classes": ["RadioAgent"],
       "deleted_classes": ["CounterAgent"]
+    },
+    {
+      "tag": "v3",
+      "renamed_classes": [{ "from": "RadioAgent", "to": "OtayoriAgent" }]
     }
   ]
 }
