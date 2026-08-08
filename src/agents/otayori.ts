@@ -1,6 +1,6 @@
 import { Agent, callable } from 'agents'
-import { resolveTrack, type SpotifyTrack } from '../spotify'
 import { synthesizeBase64 } from '../tts'
+import { resolveVideo, type YouTubeVideo } from '../youtube'
 
 export type OtayoriEntry = {
   id: string
@@ -8,8 +8,7 @@ export type OtayoriEntry = {
   reply: string
   songTitle: string
   songArtist: string
-  songReason: string
-  spotify: SpotifyTrack | null
+  youtube: YouTubeVideo | null
   createdAt: number
 }
 
@@ -18,23 +17,26 @@ export type OtayoriState = {
 }
 
 // 語り手に名前や肩書きは与えない。返事は「誰か」ではなく、お便りそのものに向き合う。
-const SYSTEM_PROMPT = `あなたは、届いた「お便り」を静かに受け止めて返事を書く存在です。
+// 返事はそのまま声になるので、受け止めから曲紹介までを一続きの話し言葉で書かせる。
+const SYSTEM_PROMPT = `あなたは、届いた「お便り」を受け止めて返事をする存在です。返事はそのまま声に出して読まれます。
 
 ルール:
 - 名乗らないでください。自分の名前・肩書き・キャラクター設定には一切触れないでください。
-- 返事は2〜3文の日本語。相手の気持ちをそのまま受け止める、落ち着いた話し言葉で。
-- 助言や説教はしない。安易に励まさない。まず受け止めることを優先してください。
-- お便りの気分に合いそうな曲を1曲だけ提案してください。提案する曲は必ず「実在する楽曲」にしてください。Spotifyで検索して見つかる、商業リリースされた曲だけを選んでください。架空の曲名やアーティスト名を創作してはいけません。
-- 曲名とアーティスト名は、公式表記のとおり正確に書いてください。「(Official Video)」「feat. 〜」のような付随情報や、アルバム名は含めないでください。
-- 選曲理由は一文で簡潔に。
+- 返事は3〜4文の日本語。落ち着いた話し言葉で、そのまま読み上げられる文章にしてください。
+- まず相手の気持ちを受け止めてください。説教はしない。安易に励まさない。
+- 受け止めたあと、同じ返事の中で曲を1曲紹介してください。曲名とアーティスト名を必ず言い切り、なぜその曲なのかも一言添えてください。「〜の」のような言いさしで終わらせてはいけません。
+  例: 「…そんな夜には、この曲を。○○(アーティスト名)で、○○(曲名)。まっすぐな言葉が、少しだけ肩の力を抜いてくれます。」
+- 紹介する曲は必ず「実在する楽曲」にしてください。YouTubeで検索して見つかる、商業リリースされた曲だけを選んでください。架空の曲名やアーティスト名を創作してはいけません。
+- 日本で知名度の高い曲を選んでください。日本のヒット曲か、日本でも広く聴かれている洋楽から選ぶこと。多くの人が「知っている」と感じる曲が正解です。マニアックな曲、知る人ぞ知る曲は避けてください。
+- 返事の中で曲名やアーティスト名を言うときは、耳で聞いて自然な表記にしてください（例:「○○で、○○」）。
+- songTitle と songArtist は検索に使います。公式表記のとおり正確に、「(Official Video)」「feat. 〜」のような付随情報やアルバム名は含めずに書いてください。
 - 出力は必ず次のJSON形式のみで返してください。説明文やコードブロックは不要です:
-{"reply": "返事", "songTitle": "曲名", "songArtist": "アーティスト名", "songReason": "選曲理由"}`
+{"reply": "返事", "songTitle": "曲名", "songArtist": "アーティスト名"}`
 
 type GeneratedReply = {
   reply: string
   songTitle: string
   songArtist: string
-  songReason: string
 }
 
 function parseGeneratedReply(raw: string): GeneratedReply {
@@ -43,8 +45,7 @@ function parseGeneratedReply(raw: string): GeneratedReply {
   return {
     reply: String(parsed.reply ?? ''),
     songTitle: String(parsed.songTitle ?? ''),
-    songArtist: String(parsed.songArtist ?? ''),
-    songReason: String(parsed.songReason ?? '')
+    songArtist: String(parsed.songArtist ?? '')
   }
 }
 
@@ -65,23 +66,32 @@ export class OtayoriAgent extends Agent<CloudflareBindings, OtayoriState> {
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: text }
       ],
-      response_format: { type: 'json_object' }
+      response_format: { type: 'json_object' },
+      // 既定(256)だと日本語では曲紹介の途中で切れる。
+      max_tokens: 768
     })
 
     const raw = typeof result === 'string' ? result : 'response' in result ? (result.response ?? '') : ''
     const generated = parseGeneratedReply(raw)
-    const spotify = await resolveTrack(this.env, generated.songTitle, generated.songArtist)
+
+    // 曲探しと読み上げは互いに独立しているので同時に走らせる。
+    // 音声は返事と一緒に返し、クライアントが往復なしですぐ鳴らせるようにする。
+    const [youtube, audio] = await Promise.all([
+      resolveVideo(this.env, generated.songTitle, generated.songArtist),
+      synthesizeBase64(this.env, generated.reply)
+    ])
 
     const entry: OtayoriEntry = {
       id: crypto.randomUUID(),
       postcard: text,
       ...generated,
-      spotify,
+      youtube,
       createdAt: Date.now()
     }
 
     this.setState({ entries: [...this.state.entries, entry] })
-    return entry
+    // 音声は state に残さない（base64がお便りの数だけ積み上がるため）。
+    return { entry, audio: audio ? `data:audio/mpeg;base64,${audio}` : null }
   }
 
   /**

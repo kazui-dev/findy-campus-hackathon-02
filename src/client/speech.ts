@@ -124,8 +124,7 @@ function speakWithDevice(text: string, onEnd: () => void) {
 
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'ja-JP'
-  // 落ち着いた読み上げに寄せる。既定の速度は少し急かして聞こえる。
-  utterance.rate = 0.92
+  utterance.rate = 1.05
   utterance.pitch = 1.05
   const voice = resolveVoice()
   if (voice) utterance.voice = voice

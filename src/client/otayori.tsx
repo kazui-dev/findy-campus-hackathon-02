@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAgent } from 'agents/react'
 import type { OtayoriAgent, OtayoriState, OtayoriEntry } from '../agents/otayori'
 import { getClientId } from './client-id'
 import { playReply, primeAudio, stopSpeaking } from './speech'
+import { pause, playVideo, resume, stop, subscribe } from './youtube-player'
 
 type Tab = 'write' | 'history'
 
@@ -14,10 +15,19 @@ export function Otayori() {
   const [latest, setLatest] = useState<OtayoriEntry | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [speakingId, setSpeakingId] = useState<string | null>(null)
+  const [nowPlaying, setNowPlaying] = useState<OtayoriEntry | null>(null)
+  const [playing, setPlaying] = useState(false)
   const [clientId] = useState(getClientId)
+  const playerHost = useRef<HTMLDivElement>(null)
 
-  // 読み上げは画面を離れても鳴り続けるので、アンマウント時に必ず止める。
-  useEffect(() => stopSpeaking, [])
+  useEffect(() => {
+    subscribe(setPlaying)
+    // 読み上げも曲も画面を離れると鳴りっぱなしになるので、必ず止める。
+    return () => {
+      stopSpeaking()
+      stop()
+    }
+  }, [])
 
   const agent = useAgent<OtayoriAgent, OtayoriState>({
     agent: 'OtayoriAgent',
@@ -30,17 +40,36 @@ export function Otayori() {
     const value = text.trim()
     if (!value || sending) return
 
+    // 返事が返るまで数秒あくので、タップの権利があるいまのうちに再生を許可させる。
+    primeAudio()
+    stop()
     setSending(true)
     setError(null)
     try {
-      const entry = await agent.stub.submitPostcard(value)
+      const { entry, audio } = await agent.stub.submitPostcard(value)
       setText('')
       setLatest(entry)
+      // 届いたらそのまま読み上げ、読み終わったら曲へ。タップは挟まない。
+      setSpeakingId(entry.id)
+      playReply(
+        () => Promise.resolve(audio),
+        entry.reply,
+        () => {
+          setSpeakingId((current) => (current === entry.id ? null : current))
+          startSong(entry)
+        }
+      )
     } catch {
       setError('うまく送れませんでした。もう一度お試しください。')
     } finally {
       setSending(false)
     }
+  }
+
+  function startSong(entry: OtayoriEntry) {
+    if (!entry.youtube || !playerHost.current) return
+    setNowPlaying(entry)
+    playVideo(playerHost.current, entry.youtube.videoId)
   }
 
   function handleSpeak(entry: OtayoriEntry) {
@@ -54,11 +83,16 @@ export function Otayori() {
 
     // 音声を取りに行く前に、クリックの権利があるうちに再生を許可させる。
     primeAudio()
+    stop()
     setSpeakingId(entry.id)
     playReply(
       () => agent.stub.speak(entry.id),
       entry.reply,
-      () => setSpeakingId((current) => (current === entry.id ? null : current))
+      () => {
+        setSpeakingId((current) => (current === entry.id ? null : current))
+        // 返事を読み終えたら、そのまま曲へ渡す。
+        startSong(entry)
+      }
     )
   }
 
@@ -72,9 +106,15 @@ export function Otayori() {
         {tab === 'write' ? (
           latest ? (
             <div className="reply-view">
-              <ReplyCard entry={latest} speaking={speakingId === latest.id} onSpeak={handleSpeak} />
+              <ReplyCard
+                entry={latest}
+                speaking={speakingId === latest.id}
+                auto
+                onSpeak={handleSpeak}
+                onPlaySong={startSong}
+              />
               <button type="button" className="ghost-button" onClick={() => setLatest(null)}>
-                また書く
+                別のおたよりを書く
               </button>
             </div>
           ) : (
@@ -101,7 +141,12 @@ export function Otayori() {
                 <article key={entry.id} className="history-item">
                   <time className="history-date">{formatDate(entry.createdAt)}</time>
                   <p className="history-postcard">{entry.postcard}</p>
-                  <ReplyCard entry={entry} speaking={speakingId === entry.id} onSpeak={handleSpeak} />
+                  <ReplyCard
+                    entry={entry}
+                    speaking={speakingId === entry.id}
+                    onSpeak={handleSpeak}
+                    onPlaySong={startSong}
+                  />
                 </article>
               ))
             )}
@@ -111,12 +156,31 @@ export function Otayori() {
         {error && <p className="error">{error}</p>}
       </main>
 
+      {/* プレイヤーは作り直すと再生が切れるので、常に置いたまま表示だけ切り替える。 */}
+      <div className={nowPlaying ? 'miniplayer' : 'miniplayer is-idle'}>
+        <div className="miniplayer-video">
+          <div ref={playerHost} />
+        </div>
+        <div className="miniplayer-meta">
+          <span className="miniplayer-title">{nowPlaying?.youtube?.title}</span>
+          <span className="miniplayer-channel">{nowPlaying?.youtube?.channel}</span>
+        </div>
+        <button
+          type="button"
+          className="miniplayer-toggle"
+          onClick={() => (playing ? pause() : resume())}
+          aria-label={playing ? '一時停止' : '再生'}
+        >
+          {playing ? '❙❙' : '▶'}
+        </button>
+      </div>
+
       <nav className="tabbar">
         <button type="button" className={tab === 'write' ? 'active' : ''} onClick={() => setTab('write')}>
-          書く
+          おたよりを書く
         </button>
         <button type="button" className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>
-          これまで
+          履歴
         </button>
       </nav>
     </div>
@@ -126,27 +190,38 @@ export function Otayori() {
 function ReplyCard({
   entry,
   speaking,
-  onSpeak
+  auto = false,
+  onSpeak,
+  onPlaySong
 }: {
   entry: OtayoriEntry
   speaking: boolean
+  auto?: boolean
   onSpeak: (entry: OtayoriEntry) => void
+  onPlaySong: (entry: OtayoriEntry) => void
 }) {
+  // 届いた直後は勝手に読み上げているので、出すのは「とめる」だけでいい。
+  const showSpeakButton = speaking || !auto
+
   return (
     <div className="reply">
       <p className="reply-text">{entry.reply}</p>
-      <button type="button" className={speaking ? 'speak-button speaking' : 'speak-button'} onClick={() => onSpeak(entry)}>
-        {speaking ? 'とめる' : '聴く'}
-      </button>
+      {showSpeakButton && (
+        <button type="button" className={speaking ? 'speak-button speaking' : 'speak-button'} onClick={() => onSpeak(entry)}>
+          {speaking ? 'とめる' : '聴く'}
+        </button>
+      )}
 
-      {entry.spotify ? (
-        <a className="track" href={entry.spotify.url} target="_blank" rel="noreferrer">
-          {entry.spotify.albumImage && <img className="track-art" src={entry.spotify.albumImage} alt="" width={48} height={48} />}
-          <span className="track-meta">
-            <span className="track-name">{entry.spotify.name}</span>
-            <span className="track-artist">{entry.spotify.artist}</span>
+      {entry.youtube ? (
+        <button type="button" className="track" onClick={() => onPlaySong(entry)}>
+          <span className="track-play" aria-hidden="true">
+            ▶
           </span>
-        </a>
+          <span className="track-meta">
+            <span className="track-name">{entry.songTitle}</span>
+            <span className="track-artist">{entry.songArtist}</span>
+          </span>
+        </button>
       ) : (
         <p className="track track-plain">
           <span className="track-meta">
@@ -155,7 +230,6 @@ function ReplyCard({
           </span>
         </p>
       )}
-      <p className="track-reason">{entry.songReason}</p>
     </div>
   )
 }

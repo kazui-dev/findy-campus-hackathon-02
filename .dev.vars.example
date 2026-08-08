@@ -1,8 +1,7 @@
-SPOTIFY_CLIENT_ID=""
-SPOTIFY_CLIENT_SECRET=""
-SPOTIFY_REDIRECT_URI="http://127.0.0.1:5173/api/spotify/callback"
-
 # Google Cloud Text-to-Speech（どちらか片方でOK。APIキーが簡単）
 GOOGLE_TTS_API_KEY=""
 GOOGLE_SERVICE_ACCOUNT_JSON=""
 GOOGLE_TTS_VOICE="ja-JP-Chirp3-HD-Achernar"
+
+# YouTube Data API v3
+YOUTUBE_API_KEY=""

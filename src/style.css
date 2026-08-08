@@ -160,14 +160,23 @@ button:disabled {
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 14px;
+  background: transparent;
   color: inherit;
+  text-align: left;
   text-decoration: none;
 }
 
-.track-art {
+.track-play {
   flex-shrink: 0;
-  border-radius: 8px;
-  object-fit: cover;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.7rem;
+  padding-left: 2px;
 }
 
 .track-meta {
@@ -184,13 +193,6 @@ button:disabled {
 
 .track-artist {
   font-size: 0.85rem;
-  color: var(--sub);
-}
-
-.track-reason {
-  margin: 0;
-  font-size: 0.85rem;
-  line-height: 1.7;
   color: var(--sub);
 }
 
@@ -238,6 +240,72 @@ button:disabled {
   margin: 16px 0 0;
   font-size: 0.85rem;
   color: #d4384a;
+}
+
+/* ミニプレイヤー */
+
+.miniplayer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.miniplayer.is-idle {
+  display: none;
+}
+
+.miniplayer-video {
+  flex-shrink: 0;
+  width: 120px;
+  height: 68px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+.miniplayer-video iframe {
+  width: 120px;
+  height: 68px;
+  border: 0;
+}
+
+.miniplayer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.miniplayer-title,
+.miniplayer-channel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.miniplayer-title {
+  font-size: 0.85rem;
+}
+
+.miniplayer-channel {
+  font-size: 0.75rem;
+  color: var(--sub);
+}
+
+.miniplayer-toggle {
+  flex-shrink: 0;
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.7rem;
 }
 
 /* タブ */

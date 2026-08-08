@@ -109,8 +109,8 @@ async function requestSynthesis(env: CloudflareBindings, text: string, voice: st
     body: JSON.stringify({
       input: { text },
       voice: { languageCode: 'ja-JP', name: voice },
-      // Chirp 3 は pitch を受け付けないので speakingRate だけで落ち着かせる。
-      audioConfig: { audioEncoding: 'MP3', speakingRate: 0.95 }
+      // Chirp 3 は pitch を受け付けない。少しだけ速めにして間延びを避ける。
+      audioConfig: { audioEncoding: 'MP3', speakingRate: 1.1 }
     })
   })
 }
