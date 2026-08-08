@@ -18,7 +18,12 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["RadioAgent"]
+      "new_sqlite_classes": ["CounterAgent"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["RadioAgent"],
+      "deleted_classes": ["CounterAgent"]
     }
   ]
 }
