@@ -10,7 +10,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
-    "agents": "^0.20.1",
+    "agents": "^0.29.0",
     "hono": "^4.12.27",
     "hono-agents": "^3.0.11",
     "react": "^19.2.7",
