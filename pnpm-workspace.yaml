@@ -1,0 +1,12 @@
+packages:
+  - .
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd
+overrides:
+  "miniflare>undici": "7.30.1"
+  "agents>@modelcontextprotocol/sdk": "1.32.1"
+  "agents>@modelcontextprotocol/client": "2.3.1"
+  "agents>@modelcontextprotocol/server": "2.3.1"
+  "agents>zod": "4.6.7"
