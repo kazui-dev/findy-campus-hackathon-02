@@ -5,9 +5,11 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  miniflare>undici: 7.30.1
   agents>@modelcontextprotocol/sdk: 1.32.1
   agents>@modelcontextprotocol/client: 2.3.0
   agents>@modelcontextprotocol/server: 2.3.0
+  agents>zod: 4.6.7
 
 importers:
 
@@ -15,13 +17,13 @@ importers:
     dependencies:
       agents:
         specifier: ^0.20.1
-        version: 0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.4.3))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.4.3)
+        version: 0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.6.7))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.6.7)
       hono:
         specifier: ^4.13.13
         version: 4.13.13
       hono-agents:
         specifier: ^3.0.12
-        version: 3.0.12(agents@0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.4.3))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.4.3))(hono@4.13.13)
+        version: 3.0.12(agents@0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.6.7))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.6.7))(hono@4.13.13)
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -845,7 +847,7 @@ packages:
       just-bash: ^3.0.0
       react: ^19.0.0
       vite: '>=6.0.0 <9.0.0'
-      zod: ^4.0.0
+      zod: 4.6.7
     peerDependenciesMeta:
       '@ai-sdk/react':
         optional: true
@@ -1531,8 +1533,8 @@ packages:
     resolution: {integrity: sha512-faYHw0anBbc/kWF3zFTEnxSFOAGUX9GFbOBthvDdLsIlEoWOFOtS0zgCiQYwIskL9iGXZL3kAXD8OoZ4GmMATA==}
     engines: {node: '>= 18'}
 
-  undici@7.29.1:
-    resolution: {integrity: sha512-RYONW2MeafgYlkVOKYKkA/Ag7BmXqgIWCa8t1m0JcxrQg9pI9lEqRhAOruOBCbAohOa/gkCF+iPi9hrgvTzu6Q==}
+  undici@7.30.1:
+    resolution: {integrity: sha512-03KrMbjIFDWQR5RNPrSw3bd1r12JpyFQl9/yxjUbJtqkjmllqC5lFjZh6ujeuJCKr8EOQvRW872Oy/az+nLYxg==}
     engines: {node: '>=20.18.1'}
 
   unenv@2.0.0-rc.24:
@@ -1675,8 +1677,8 @@ packages:
     peerDependencies:
       zod: ^3.25.28 || ^4
 
-  zod@4.4.3:
-    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
 
@@ -2157,13 +2159,13 @@ snapshots:
       eventsource-parser: 3.1.1
       jose: 6.2.13
       pkce-challenge: 5.0.1
-      zod: 4.4.3
+      zod: 4.6.7
 
   '@modelcontextprotocol/core@2.3.0':
     dependencies:
-      zod: 4.4.3
+      zod: 4.6.7
 
-  '@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.4.3)':
+  '@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.6.7)':
     dependencies:
       '@hono/node-server': 2.1.5(hono@4.13.13)
       ajv: 8.20.0
@@ -2180,8 +2182,8 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 4.4.3
-      zod-to-json-schema: 3.25.2(zod@4.4.3)
+      zod: 4.6.7
+      zod-to-json-schema: 3.25.2(zod@4.6.7)
     optionalDependencies:
       '@cfworker/json-schema': 4.1.1
     transitivePeerDependencies:
@@ -2190,7 +2192,7 @@ snapshots:
   '@modelcontextprotocol/server@2.3.0':
     dependencies:
       '@modelcontextprotocol/core': 2.3.0
-      zod: 4.4.3
+      zod: 4.6.7
 
   '@oxc-project/types@0.155.0': {}
 
@@ -2290,12 +2292,12 @@ snapshots:
       mime-types: 3.0.2
       negotiator: 1.1.0
 
-  agents@0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.4.3))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.4.3):
+  agents@0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.6.7))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.6.7):
     dependencies:
       '@babel/plugin-proposal-decorators': 8.0.2(@babel/core@8.0.1)
       '@cfworker/json-schema': 4.1.1
       '@modelcontextprotocol/client': 2.3.0
-      '@modelcontextprotocol/sdk': 1.32.1(@cfworker/json-schema@4.1.1)(zod@4.4.3)
+      '@modelcontextprotocol/sdk': 1.32.1(@cfworker/json-schema@4.1.1)(zod@4.6.7)
       '@modelcontextprotocol/server': 2.3.0
       '@rolldown/plugin-babel': 0.2.4(@babel/core@8.0.1)(@babel/runtime@7.29.10)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))
       cron-schedule: 6.0.0
@@ -2307,7 +2309,7 @@ snapshots:
       react: 19.3.1
       yaml: 2.9.1
       yargs: 18.2.0
-      zod: 4.4.3
+      zod: 4.6.7
     optionalDependencies:
       vite: 8.3.5(esbuild@0.28.2)(yaml@2.9.1)
     transitivePeerDependencies:
@@ -2589,9 +2591,9 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono-agents@3.0.12(agents@0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.4.3))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.4.3))(hono@4.13.13):
+  hono-agents@3.0.12(agents@0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.6.7))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.6.7))(hono@4.13.13):
     dependencies:
-      agents: 0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.4.3))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.4.3)
+      agents: 0.20.1(@babel/core@8.0.1)(@babel/runtime@7.29.10)(@cloudflare/workers-types@5.20260808.1)(@modelcontextprotocol/client@2.3.0)(@modelcontextprotocol/sdk@1.32.1(@cfworker/json-schema@4.1.1)(zod@4.6.7))(@modelcontextprotocol/server@2.3.0)(react@19.3.1)(rolldown@1.2.15)(vite@8.3.5(esbuild@0.28.2)(yaml@2.9.1))(zod@4.6.7)
       hono: 4.13.13
 
   hono@4.13.13: {}
@@ -2716,7 +2718,7 @@ snapshots:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.35.5
-      undici: 7.29.1
+      undici: 7.30.1
       workerd: 1.20261012.1
       ws: 8.21.0
       youch: 4.1.0-beta.10
@@ -2729,7 +2731,7 @@ snapshots:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.35.5
-      undici: 7.29.1
+      undici: 7.30.1
       workerd: 1.20261019.1
       ws: 8.21.0
       youch: 4.1.0-beta.10
@@ -2994,7 +2996,7 @@ snapshots:
       media-typer: 1.1.1
       mime-types: 3.0.2
 
-  undici@7.29.1: {}
+  undici@7.30.1: {}
 
   unenv@2.0.0-rc.24:
     dependencies:
@@ -3108,8 +3110,8 @@ snapshots:
       cookie: 1.1.1
       youch-core: 0.3.3
 
-  zod-to-json-schema@3.25.2(zod@4.4.3):
+  zod-to-json-schema@3.25.2(zod@4.6.7):
     dependencies:
-      zod: 4.4.3
+      zod: 4.6.7
 
-  zod@4.4.3: {}
+  zod@4.6.7: {}
