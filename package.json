@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "agents": "^0.29.0",
-    "hono": "^4.13.13",
+    "hono": "^4.13.16",
     "hono-agents": "^3.0.12",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
